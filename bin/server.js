@@ -5,7 +5,7 @@
 require('dotenv').config();
 
 const app = require('../app');
-const debug = require('debug')('kill-the-virus:server');
+const debug = require('debug')('kill-the-virus-game:server');
 const http = require('http');
 const SocketIO = require('socket.io');
 
@@ -21,8 +21,53 @@ app.set('port', port);
 const server = http.createServer(app);
 const io = SocketIO(server);
 
+const players = {};
+const queue = [];
+
+// Find opponent
+const findOpponents = (socket) => {
+	if (queue.length) {
+		const opponent = queue.pop();
+		debug('Player removed from queue:', queue);
+
+		// Emit to start new game
+		opponent.emit('start-game', { player: players[opponent.id], opponent: players[socket.id] });
+		socket.emit('start-game', { player: players[socket.id], opponent: players[opponent.id] });
+
+	} else {
+		// Add to queue
+		queue.push(socket);
+		debug('Player added to queue:', queue);
+	}
+};
+
+
 io.on('connection', (socket) => {
-	console.log(`Client ${socket.id} connected.`);
+	debug(`Client ${socket.id} connected.`);
+
+	// Handle player disconnecting
+	socket.on('disconnect', () => {
+		debug(`Socket ${socket.id} left the game.`);
+
+		// remove player from list of connected players
+		delete players[socket.id];
+	})
+
+	// Handle new player connecting
+	socket.on('register-player', (username) => {
+		debug(`New player joined: ${username}`);
+
+		// Save new player
+		players[socket.id] = username;
+
+		// Broadcast message while waiting for an opponent to joing
+		socket.emit('waiting', { message: 'Waiting for another player to join...' });
+
+		// Find opponent
+		findOpponents(socket);
+	})
+
+
 });
 
 /**

@@ -5,10 +5,95 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Kill the virus game</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma.min.css">
+	<link rel="stylesheet" href="/assets/css/style.css">
 </head>
 
 <body>
-	Kill the virus game
+	<!-- Game section-->
+	<section id="game" class="section hide">
+		<div class="container has-background-white">
+			<div class="columns">
+				<div id="game-area" class="column is-three-quarters has-background-light">
+					<img src="/assets/images/virus.svg" alt="" id="virus">
+				</div>
+				<div class="column">
+					<div class="card">
+						<header class="card-header">
+							<p class="card-header-title">Score board</p>
+						</header>
+						<div class="card-content">
+							<div class="content">
+								<p class="is-size-1 has-text-weight-bold">0 - 0</p>
+							</div>
+						</div>
+						<footer class="card-footer">
+							<p id="timer" class="card-footer-item">00:00.000</p>
+						</footer>
+					</div>
+					<div class="card">
+						<header class="card-header">
+							<p class="card-header-title" id="player-username">You</p>
+						</header>
+						<div class="card-content">
+							<div id="player-timer" class="content">
+								&mdash;
+							</div>
+						</div>
+						<footer class="card-footer">
+							<p id="player-best" class="card-footer-item">Best: &mdash;</p>
+						</footer>
+					</div>
+					<div class="card">
+						<header class="card-header">
+							<p class="card-header-title" id="opponent-username">Bengt</p>
+						</header>
+						<div class="card-content">
+							<div id="opponent-timer" class="content">
+								&mdash;
+							</div>
+						</div>
+						<footer class="card-footer">
+							<p id="opponent-best" class="card-footer-item">Best: &mdash;</p>
+						</footer>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Start section-->
+	<section id="start" class="section">
+		<div class="container ">
+			<div class="columns is-centered">
+				<div class="column is-three-fifths has-text-centered ">
+					<h1 class="title is-size-1 has-text-white mb-6">Kill the Virus</h1>
+					<h2 class="subtitle has-text-white mb-6">
+						A simple 2-player real-time game where the goal is to click on a virus as quickly as possible to
+						eradicate it. Points are awarded to the players with the fastest reaction time.
+					</h2>
+
+					<form id="start-form" class="field has-addons">
+						<div class="control">
+							<input class="input" type="text" id="username"
+								placeholder="Enter a nickname to start the game...">
+						</div>
+						<div class="control">
+							<button type="submit" class="button is-info">
+								Play
+							</button>
+						</div>
+					</form>
+
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Message section-->
+	<section id="message" class="section has-text-centered hide has-text-white">
+		<p id="message-content"></p>
+	</section>
 
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/assets/js/game.js"></script>

@@ -15,7 +15,7 @@
 		<div class="container has-background-white">
 			<div class="columns">
 				<div id="game-area" class="column is-three-quarters has-background-light">
-					<img src="/assets/images/virus.svg" alt="" id="virus">
+					<img src="/assets/images/virus.svg" alt="" id="virus" class="hide">
 				</div>
 				<div class="column">
 					<div class="card">
@@ -24,7 +24,9 @@
 						</header>
 						<div class="card-content">
 							<div class="content">
-								<p class="is-size-1 has-text-weight-bold">0 - 0</p>
+								<p class="is-size-1 has-text-weight-bold">
+									<span id="player-score"></span> - <span id="opponent-score"></span>
+								</p>
 							</div>
 						</div>
 						<footer class="card-footer">
@@ -40,9 +42,9 @@
 								&mdash;
 							</div>
 						</div>
-						<footer class="card-footer">
+						<!-- <footer class="card-footer">
 							<p id="player-best" class="card-footer-item">Best: &mdash;</p>
-						</footer>
+						</footer> -->
 					</div>
 					<div class="card">
 						<header class="card-header">
@@ -53,9 +55,9 @@
 								&mdash;
 							</div>
 						</div>
-						<footer class="card-footer">
+						<!-- <footer class="card-footer">
 							<p id="opponent-best" class="card-footer-item">Best: &mdash;</p>
-						</footer>
+						</footer> -->
 					</div>
 				</div>
 			</div>
@@ -96,6 +98,7 @@
 	</section>
 
 	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
 	<script src="/assets/js/game.js"></script>
 </body>
 

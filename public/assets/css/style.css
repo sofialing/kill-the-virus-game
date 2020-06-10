@@ -45,18 +45,16 @@ body {
 	flex-grow: 1;
 }
 
-#game .game-area {
-	height: 100%;
-	flex-grow: 1;
+#game-area {
+	/* height: 100%;
+	flex-grow: 1; */
 	position: relative;
 }
 
 #virus {
-	height: 75px;
-	width: 75px;
+	height: 10%;
+	width: 10%;
 	position: absolute;
-	top: 60px;
-	left: 300px;
 }
 
 .card {

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Kill the virus game</title>
+	<title>Kill The Virus</title>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma.min.css">
 	<link rel="stylesheet" href="/assets/css/style.css">
 </head>
@@ -15,7 +15,9 @@
 		<div class="container has-background-white">
 			<div class="columns">
 				<div id="game-area" class="column is-three-quarters has-background-light">
-					<img src="/assets/images/virus.svg" alt="" id="virus" class="hide">
+					<figure id="virus" class="hide">
+						<img src="/assets/images/virus.svg" alt="" class="">
+					</figure>
 				</div>
 				<div class="column">
 					<div class="card">
@@ -35,7 +37,7 @@
 					</div>
 					<div class="card">
 						<header class="card-header">
-							<p class="card-header-title" id="player-username">You</p>
+							<p class="card-header-title" id="player-username"></p>
 						</header>
 						<div class="card-content">
 							<div id="player-timer" class="content">
@@ -48,7 +50,7 @@
 					</div>
 					<div class="card">
 						<header class="card-header">
-							<p class="card-header-title" id="opponent-username">Bengt</p>
+							<p class="card-header-title" id="opponent-username"></p>
 						</header>
 						<div class="card-content">
 							<div id="opponent-timer" class="content">

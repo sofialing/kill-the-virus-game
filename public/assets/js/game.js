@@ -3,32 +3,43 @@ const socket = io();
 const startEl = document.querySelector('#start-form');
 const virus = document.querySelector('#virus');
 
-let gameData = {};
-let rounds = 0;
-let timer = 0;
-let startTime = 0;
-let reactionTime = 0;
+let username = null;
+let playerId = null;
 
-
-/**
- * Update timer
- */
-const updateDisplay = (reactionTime) => {
-	document.querySelector('#timer').innerHTML = moment(reactionTime).format('mm:ss.SSS');
-}
+let gameRound = 0;
+let timerInterval;
+let startTime;
+let reactionTime;
 
 /**
  * Update game interface
  */
-const updateUI = (data) => {
-	document.querySelector('#player-username').innerHTML = data.player.username;
-	document.querySelector('#player-score').innerHTML = data.player.score;
-	document.querySelector('#opponent-username').innerHTML = data.opponent.username;
-	document.querySelector('#opponent-score').innerHTML = data.opponent.score;
+const updateUI = (opponentUsername) => {
+	// update usernames
+	document.querySelector('#player-username').innerHTML = username;
+	document.querySelector('#opponent-username').innerHTML = opponentUsername;
 
-	// Hide message and show game
+	// hide waiting-message and show game area
 	document.querySelector('#message').classList.add('hide');
 	document.querySelector('#game').classList.remove('hide');
+}
+
+/**
+ * Update timer
+ */
+const updateTimer = (id, time) => {
+	document.querySelector(`#${id}`).innerHTML = moment(time).format('mm:ss.SSS');
+}
+
+/**
+ * Start timer
+ */
+const startTimer = () => {
+	startTime = Date.now();
+	timerInterval = setInterval(function () {
+		reactionTime = Date.now() - startTime;
+		updateTimer('timer', reactionTime);
+	});
 }
 
 /**
@@ -36,9 +47,15 @@ const updateUI = (data) => {
  */
 startEl.addEventListener('submit', e => {
 	e.preventDefault();
-	socket.emit('register-player', document.querySelector('#username').value);
 
-	// Hide start section
+	// prevent empty username
+	if (!startEl.username.value) return;
+
+	// save username and emit it to server
+	username = startEl.username.value;
+	socket.emit('register-player', username);
+
+	// hide start section
 	document.querySelector('#start').classList.add('hide');
 });
 
@@ -46,18 +63,15 @@ startEl.addEventListener('submit', e => {
  * Handle click on virus and emit 'reaction-time'-event to server
  */
 virus.addEventListener('click', e => {
-	// Stop Timer
-	clearInterval(timer);
+	// stop Timer
+	clearInterval(timerInterval);
 
-	// Hide virus and show reaction time
+	// hide virus and display players reaction time
 	document.querySelector('#virus').classList.add('hide');
-	document.querySelector('#player-timer').innerHTML = moment(reactionTime).format('mm:ss.SSS');
+	updateTimer('player-timer', reactionTime);
 
-	// Emit reaction time to server
-	socket.emit('reaction-time', reactionTime);
-
-	// // Reset reactionTime
-	// reactionTime = 0;
+	// emit reaction time to server
+	socket.emit('virus-killed', { reactionTime, gameRound });
 });
 
 /**
@@ -71,49 +85,44 @@ socket.on('waiting', ({ message }) => {
 /**
  * Init game and update UI
  */
-socket.on('init-game', (data) => {
-	gameData = data;
-	updateUI(data);
-	socket.emit('new-round');
-	rounds++;
+socket.on('init-game', ({ id, opponent }) => {
+	// save socket ID
+	playerId = id;
+
+	// update game UI with usernames
+	updateUI(opponent);
 })
 
 /**
  * Show virus and start timer
  */
-socket.on('show-virus', (data) => {
-	console.log(data);
+socket.on('show-virus', ({ delay, x, y }) => {
 	setTimeout(() => {
+		// Update position and show virus
+		document.querySelector('#virus').style.gridColumn = `${x} / span 1`;
+		document.querySelector('#virus').style.gridRow = `${y} / span 1`;
 		document.querySelector('#virus').classList.remove('hide');
-		document.querySelector('#virus').style.left = data.x > 90 ? '90%' : `${data.x}%`;
-		document.querySelector('#virus').style.top = data.y > 90 ? '90%' : `${data.y}%`;
-		startTime = Date.now();
-		timer = setInterval(function () {
-			reactionTime = Date.now() - startTime;
-			updateDisplay(reactionTime);
-		});
-	}, data.delay)
+
+		// Start timer
+		startTimer();
+
+	}, delay)
 });
 
 /**
  * Show opponents reaction time
  */
-socket.on('opponent-time', (opponentReactionTime) => {
-	document.querySelector('#opponent-timer').innerHTML = moment(opponentReactionTime).format('mm:ss.SSS');
-	if (reactionTime) {
-		socket.emit('compare-time', reactionTime, opponentReactionTime);
-	}
+socket.on('show-reaction-time', (opponentReactionTime) => {
+	updateTimer('opponent-timer', opponentReactionTime);
 })
 
 /**
  * Update score
  */
-socket.on('update-score', (score) => {
-	if (score) {
-		gameData.player.score++;
-		document.querySelector('#player-score').innerHTML = gameData.player.score;
+socket.on('update-score', ({ winnerId, score }) => {
+	if (winnerId === playerId) {
+		document.querySelector('#player-score').innerHTML = score;
 	} else {
-		gameData.opponent.score++;
-		document.querySelector('#opponent-score').innerHTML = gameData.opponent.score;
+		document.querySelector('#opponent-score').innerHTML = score;
 	}
 })

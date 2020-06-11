@@ -126,3 +126,27 @@ socket.on('update-score', ({ winnerId, score }) => {
 		document.querySelector('#opponent-score').innerHTML = score;
 	}
 })
+
+
+socket.on('new-round', ({ delay, x, y }) => {
+	// update rounds
+	gameRound++;
+	document.querySelector('#game-round').innerHTML = gameRound + 1;
+
+	// show virus
+	setTimeout(() => {
+		// Update position and show virus
+		document.querySelector('#virus').style.gridColumn = `${x} / span 1`;
+		document.querySelector('#virus').style.gridRow = `${y} / span 1`;
+		document.querySelector('#virus').classList.remove('hide');
+
+		// Start timer
+		startTimer();
+
+	}, delay)
+
+})
+
+socket.on('game-over', () => {
+	console.log('game over!');
+})

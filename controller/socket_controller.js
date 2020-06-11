@@ -118,6 +118,7 @@ module.exports = socket => {
 	 * Broadcast players reaction time to opponent
 	 */
 	socket.on('virus-killed', ({ reactionTime, gameRound }) => {
+		debug('round nr:', gameRound);
 		players[socket.id].game.reactionTime.push(reactionTime);
 		socket.broadcast.emit('show-reaction-time', reactionTime);
 
@@ -126,7 +127,13 @@ module.exports = socket => {
 		const opponentId = players[socket.id].game.opponent;
 		if (players[opponentId].game.reactionTime[gameRound]) {
 			updateScore({ winnerId: opponentId });
-			// newRound({ player: socket.id, opponent, io });
+
+			if (gameRound === 9) {
+				io.in(rooms[socket.id]).emit('game-over');
+			} else {
+				io.in(rooms[socket.id]).emit('new-round', virusState())
+			}
+
 		}
 
 	});

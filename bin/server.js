@@ -20,10 +20,9 @@ app.set('port', port);
  */
 const server = http.createServer(app);
 const io = SocketIO(server);
+app.set('io', io);
 
-require('../controller/test_controller')(io);
-
-// io.on('connection', require('../controller/socket_controller')(io));
+io.on('connection', require('../controller/socket_controller'));
 
 /**
  * Listen on provided port, on all network interfaces.

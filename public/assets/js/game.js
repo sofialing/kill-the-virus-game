@@ -5,6 +5,7 @@ const virus = document.querySelector('#virus');
 
 let username = null;
 let playerId = null;
+let room = null;
 
 let gameRound = 0;
 let timerInterval;
@@ -71,7 +72,7 @@ virus.addEventListener('click', e => {
 	updateTimer('player-timer', reactionTime);
 
 	// emit reaction time to server
-	socket.emit('virus-killed', { reactionTime, gameRound });
+	socket.emit('virus-killed', { reactionTime, gameRound, room });
 });
 
 /**
@@ -85,12 +86,13 @@ socket.on('waiting', ({ message }) => {
 /**
  * Init game and update UI
  */
-socket.on('init-game', ({ id, opponent }) => {
-	// save socket ID
-	playerId = id;
+socket.on('init-game', (data) => {
+	// save player ID and room name
+	playerId = data.id;
+	room = data.room;
 
 	// update game UI with usernames
-	updateUI(opponent);
+	updateUI(data.opponent);
 })
 
 /**

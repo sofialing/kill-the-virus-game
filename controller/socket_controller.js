@@ -29,18 +29,22 @@ const virusState = () => {
 const findOpponent = (socket) => {
 	if (queue.length) {
 		const opponent = queue.pop();
-		const room = `${socket.id}#${opponent.id}`;
+		const roomName = `${socket.id}#${opponent.id}`;
 
 		// join both players
-		opponent.join(room);
-		socket.join(room);
+		socket.join(roomName);
+		opponent.join(roomName);
 
-		// save room to both players socket ID
-		rooms[opponent.id] = room;
-		rooms[socket.id] = room;
+		// add new room and save players details
+		rooms[roomName] = {
+			players: [
+				{ ...socket.playerDetails },
+				{ ...opponent.playerDetails },
+			]
+		}
 
 		// init game room
-		initGame(socket, opponent);
+		initGame(socket, opponent, roomName);
 
 	} else {
 		// add to queue
@@ -49,33 +53,51 @@ const findOpponent = (socket) => {
 	}
 };
 
-const initGame = (socket, opponent) => {
-	// save info about each others opponent
-	players[socket.id].game.opponent = opponent.id;
-	players[opponent.id].game.opponent = socket.id;
+const getUsername = (socket) => {
+	return socket.playerDetails.username;
+}
 
+const getPlayer = (playerId, roomName) => {
+	return rooms[roomName].players.find(player => player.id === playerId);
+}
+
+const getOpponent = (playerId, roomName) => {
+	return rooms[roomName].players.find(player => player.id !== playerId);
+}
+
+const initGame = (socket, opponent, room) => {
 	// emit id and opponent username to both players
 	socket.emit('init-game', {
 		id: socket.id,
-		opponent: players[opponent.id].username,
+		opponent: getUsername(opponent),
+		room,
 	});
 
 	opponent.emit('init-game', {
 		id: opponent.id,
-		opponent: players[socket.id].username,
+		opponent: getUsername(socket),
+		room
 	});
 
 	// emit delay and position of virus to both players
-	io.in(rooms[socket.id]).emit('show-virus', virusState())
+	io.in(room).emit('show-virus', virusState())
 }
 
-const updateScore = ({ winnerId }) => {
-	// update score for the winner
-	players[winnerId].game.score++;
+const updateScore = (player, opponent, room) => {
+	// compare reaction time
+	if (player.reactionTime < player.reactionTime) {
+		player.score++;
+		player.reactionTime = null;
 
-	// emit winner ID and the updated score to both players
-	io.emit('update-score', { winnerId, score: players[winnerId].game.score });
+		io.in(room).emit('update-score', { winnerId: player.id, score: player.score })
+	} else {
+		opponent.score++;
+		opponent.reactionTime = null;
+
+		io.in(room).emit('update-score', { winnerId: opponent.id, score: opponent.score })
+	}
 }
+
 
 module.exports = socket => {
 	debug(`Client ${socket.id} connected.`);
@@ -96,15 +118,12 @@ module.exports = socket => {
 	socket.on('register-player', (username) => {
 		debug(`New player joined: ${username}`);
 
-		// save new player
-		players[socket.id] = {
+		socket.playerDetails = {
 			id: socket.id,
 			username: username,
-			game: {
-				score: 0,
-				reactionTime: []
-			}
-		};
+			score: 0,
+			reactionTime: null
+		}
 
 		// broadcast message while waiting for an opponent to joing
 		socket.emit('waiting', { message: 'Waiting for another player to join...' });
@@ -117,25 +136,19 @@ module.exports = socket => {
 	/**
 	 * Broadcast players reaction time to opponent
 	 */
-	socket.on('virus-killed', ({ reactionTime, gameRound }) => {
-		debug('round nr:', gameRound);
-		players[socket.id].game.reactionTime.push(reactionTime);
-		socket.broadcast.emit('show-reaction-time', reactionTime);
+	socket.on('virus-killed', ({ reactionTime, room }) => {
+		// save reaction time
+		const player = getPlayer(socket.id, room);
+		player.reactionTime = reactionTime;
 
-		// check if opponent already have a reaction time saved for this round
-		// if so, opponent won this round
-		const opponentId = players[socket.id].game.opponent;
-		if (players[opponentId].game.reactionTime[gameRound]) {
-			updateScore({ winnerId: opponentId });
+		// emit reaction time to opponent
+		socket.to(room).emit('show-reaction-time', reactionTime);
 
-			if (gameRound === 9) {
-				io.in(rooms[socket.id]).emit('game-over');
-			} else {
-				io.in(rooms[socket.id]).emit('new-round', virusState())
-			}
-
+		// check for opponent reaction from current game round
+		const opponent = getOpponent(socket.id, room);
+		if (opponent.reactionTime) {
+			updateScore(player, opponent, room);
 		}
-
 	});
 };
 

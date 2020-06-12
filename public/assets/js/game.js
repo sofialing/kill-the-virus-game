@@ -1,6 +1,7 @@
 const socket = io();
 
 const startEl = document.querySelector('#start-form');
+const gameOverEl = document.querySelector('#game-over');
 const virus = document.querySelector('#virus');
 
 let username = null;
@@ -63,7 +64,7 @@ startEl.addEventListener('submit', e => {
 /**
  * Handle click on virus and emit 'reaction-time'-event to server
  */
-virus.addEventListener('click', e => {
+virus.addEventListener('click', () => {
 	// stop Timer
 	clearInterval(timerInterval);
 
@@ -74,6 +75,25 @@ virus.addEventListener('click', e => {
 	// emit reaction time to server
 	socket.emit('virus-killed', { reactionTime, gameRound, gameId });
 });
+
+document.querySelector('#new-game').addEventListener('click', () => {
+	gameOverEl.classList.remove('is-active');
+	startEl.classList.remove('hiden');
+	document.querySelector('#game').classList.add('hide');
+	socket.emit('leave-game');
+	socket.emit('register-player', username);
+
+	gameRound = 0;
+
+	// reset everything
+	document.querySelector('#player-score').innerText = 0;
+	document.querySelector('#opponent-score').innerText = 0;
+	document.querySelector('#player-timer').innerHTML = '–';
+	document.querySelector('#opponent-timer').innerHTML = '–';
+	document.querySelector('#timer').innerText = '00:00.000';
+	document.querySelector('#game-round').innerText = 1;
+
+})
 
 /**
  * Show message while waiting for another player to join
@@ -149,9 +169,23 @@ socket.on('new-round', ({ delay, x, y }) => {
 
 })
 
-socket.on('game-over', () => {
+socket.on('game-over', (winner) => {
 	// stop Timer
 	clearInterval(timerInterval);
+	let result;
 
-	console.log('game over!');
+	if (!winner) {
+		result = "It's a draw!";
+	} else if (winner.id === playerId) {
+		result = 'Congratulations, you won!';
+	} else {
+		result = 'Not fast enough, you lost!';
+	}
+
+	gameOverEl.classList.add('is-active');
+	document.querySelector('#game-result').innerText = result;
+})
+
+socket.on('opponent-left-game', (data) => {
+	console.log(data.message);
 })

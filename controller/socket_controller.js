@@ -4,68 +4,79 @@
 const debug = require('debug')('kill-the-virus-game:socket_controller');
 const io = require('../app').get('io');
 
+const maxGameRounds = 2;
 const queue = [];
 const activeGames = {};
-const maxGameRounds = 3;
 
-const { getVirusState, getUsername, getPlayer, getOpponent } = require('./game_controller');
-
+const { getVirusState, getUsername, getPlayer, getOpponent, getWinner } = require('./game_controller');
 
 /**
- * Find an opponent
+ * Pair player with another player
  */
-const findOpponent = (socket) => {
+const handleGameQueue = (socket) => {
+	// check for waiting players
 	if (queue.length) {
-		const opponent = queue.pop();
-		const gameId = `${socket.id}#${opponent.id}`;
-
-		// join both players
-		socket.join(gameId);
-		opponent.join(gameId);
-
-		// add new game and save players details
-		activeGames[gameId] = {
-			players: [
-				{ ...socket.playerDetails },
-				{ ...opponent.playerDetails },
-			]
-		}
-
-		// init game room
-		initGame(socket, opponent, gameId);
-
-	} else {
-		// add player to queue
-		queue.push(socket);
-		debug(`Player ${socket.id} added to queue.`);
+		// get opponent and join new game room
+		joinGameRoom(socket, queue.pop());
+		return;
 	}
+
+	// if no waiting player, add socket to queue
+	queue.push(socket);
 };
+
+/**
+ * Create new game room and add players to it
+ */
+const joinGameRoom = (socket, opponent) => {
+	const gameId = `${socket.id}#${opponent.id}`;
+
+	// join both players
+	socket.join(gameId);
+	opponent.join(gameId);
+
+	// save to active games
+	activeGames[gameId] = {
+		players: [
+			{ ...socket.playerDetails },
+			{ ...opponent.playerDetails },
+		]
+	}
+
+	debug('activeGames', activeGames);
+
+	// init new game
+	initGame(socket, opponent, gameId);
+}
 
 /**
  * Init a new game and emit to players
  */
 const initGame = (socket, opponent, gameId) => {
-	// emit id and opponent username to both players
+	// emit details about the game to both players
 	socket.emit('init-game', {
+		gameId,
 		id: socket.id,
 		opponent: getUsername(opponent),
-		gameId,
 	});
 
 	opponent.emit('init-game', {
+		gameId,
 		id: opponent.id,
 		opponent: getUsername(socket),
-		gameId
 	});
 
 	// emit delay and position of virus to both players
 	io.in(gameId).emit('show-virus', getVirusState())
 }
 
+/**
+ * Update score and emit to players
+ */
 const updateScore = (player, opponent, gameId) => {
 	let data;
 
-	// compare reaction time
+	// compare reaction time and update score
 	if (player.reactionTime < player.reactionTime) {
 		player.score++;
 		data = { winnerId: player.id, updatedScore: player.score };
@@ -111,8 +122,8 @@ module.exports = socket => {
 		// broadcast message while waiting for an opponent to joing
 		socket.emit('waiting', { message: 'Waiting for another player to join...' });
 
-		// find opponent
-		findOpponent(socket);
+		// try to pair with another player
+		handleGameQueue(socket);
 	});
 
 
@@ -140,13 +151,31 @@ module.exports = socket => {
 
 		// check if game is over
 		if (gameRound === maxGameRounds) {
-			io.in(gameId).emit('game-over');
+			const winner = getWinner(player, opponent);
+			io.in(gameId).emit('game-over', winner);
 			return;
 		}
 
 		// start new game round
 		io.in(gameId).emit('new-round', getVirusState());
 	});
+
+	/**
+	 * Leave game
+	 */
+	socket.on('leave-game', () => {
+		// get game ID
+		const gameIds = Object.keys(activeGames);
+		const gameId = gameIds.find(id => id.includes(socket.id));
+
+		// emit to other player
+		socket.to(gameId).emit('opponent-left-game', { message: 'Opponent left the game.' });
+
+		// delete room
+		delete activeGames[gameId];
+		debug('activeGames', activeGames);
+
+	})
 };
 
 

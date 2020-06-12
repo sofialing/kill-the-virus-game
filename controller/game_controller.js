@@ -41,10 +41,25 @@ const getOpponent = (id, rooms, roomName) => {
 	return rooms[roomName].players.find(player => player.id !== id);
 }
 
+/**
+ * Get winner
+ */
+const getWinner = (player, opponent) => {
+	if (player.score === opponent.score) {
+		return false;
+	}
+
+	return (player.score > opponent.score)
+		? player
+		: opponent;
+}
+
+
 module.exports = {
 	getRandomNumber,
 	getVirusState,
 	getUsername,
 	getPlayer,
-	getOpponent
+	getOpponent,
+	getWinner,
 }

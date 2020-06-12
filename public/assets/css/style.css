@@ -91,3 +91,12 @@ body {
 #start-form .control:first-of-type{
 	flex-grow: 1;
 }
+
+.modal-card-foot {
+	justify-content: center;
+}
+
+.modal-card-head,
+.modal-card-foot {
+	border: none;
+}

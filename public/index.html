@@ -10,6 +10,23 @@
 </head>
 
 <body>
+	<!-- Game over section-->
+	<div id="game-over" class="modal">
+		<div id="modal-background" class="modal-background"></div>
+		<div class="modal-card has-text-centered">
+			<header class="modal-card-head has-background-white">
+				<p class="modal-card-title is-size-6 has-text-weight-bold is-uppercase">Game over</p>
+			</header>
+			<section class="modal-card-body">
+				<p id="game-result" class="is-size-1 has-text-weight-bold"></p>
+			</section>
+			<footer class="modal-card-foot has-background-white">
+				<button class="button is-success">Rematch</button>
+				<button id="new-game" class="button is-success">New game</button>
+			</footer>
+		</div>
+	</div>
+
 	<!-- Game section-->
 	<section id="game" class="section hide">
 		<div class="container has-background-white">

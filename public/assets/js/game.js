@@ -5,7 +5,7 @@ const virus = document.querySelector('#virus');
 
 let username = null;
 let playerId = null;
-let room = null;
+let gameId = null;
 
 let gameRound = 0;
 let timerInterval;
@@ -72,7 +72,7 @@ virus.addEventListener('click', e => {
 	updateTimer('player-timer', reactionTime);
 
 	// emit reaction time to server
-	socket.emit('virus-killed', { reactionTime, gameRound, room });
+	socket.emit('virus-killed', { reactionTime, gameRound, gameId });
 });
 
 /**
@@ -89,7 +89,7 @@ socket.on('waiting', ({ message }) => {
 socket.on('init-game', (data) => {
 	// save player ID and room name
 	playerId = data.id;
-	room = data.room;
+	gameId = data.gameId;
 
 	// update game UI with usernames
 	updateUI(data.opponent);
@@ -121,11 +121,11 @@ socket.on('show-reaction-time', (opponentReactionTime) => {
 /**
  * Update score
  */
-socket.on('update-score', ({ winnerId, score }) => {
+socket.on('update-score', ({ winnerId, updatedScore }) => {
 	if (winnerId === playerId) {
-		document.querySelector('#player-score').innerHTML = score;
+		document.querySelector('#player-score').innerHTML = updatedScore;
 	} else {
-		document.querySelector('#opponent-score').innerHTML = score;
+		document.querySelector('#opponent-score').innerHTML = updatedScore;
 	}
 })
 
@@ -150,5 +150,8 @@ socket.on('new-round', ({ delay, x, y }) => {
 })
 
 socket.on('game-over', () => {
+	// stop Timer
+	clearInterval(timerInterval);
+
 	console.log('game over!');
 })

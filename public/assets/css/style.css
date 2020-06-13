@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 * {
 	box-sizing: border-box;
 }
@@ -8,13 +9,18 @@ body {
 	font-family: 'Nunito', sans-serif;
 	background: repeating-linear-gradient(45deg, rgb(27, 27, 27) 0px, rgb(27, 27, 27) 97px,rgb(24, 24, 24) 97px, rgb(24, 24, 24) 194px,rgb(20, 20, 20) 194px, rgb(20, 20, 20) 291px);
 	width: 100vw;
-	height: 100vh;
+	min-height: 100vh;
 	margin: 0;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 }
 
+.hide {
+	display: none !important;
+}
+
+/* Start section */
 #start {
 	height: 100%;
 }
@@ -30,17 +36,18 @@ body {
 	font-family: 'Press Start 2P', cursive;
 }
 
-.hide {
-	display: none;
+#start-form .control:first-of-type{
+	flex-grow: 1;
 }
 
+/* Game section */
 #game {
-	height: 100%;
+	flex-grow: 1;
+	display: flex;
 }
 
 #game .container {
 	padding: 2rem;
-	height: 100%;
 	display: flex;
 	flex-direction: column;
 }
@@ -56,17 +63,13 @@ body {
 }
 
 #virus {
+	max-height: 50px;
 	max-width: 50px;
-    max-height: 50px;
-	justify-self: center;
-	align-self: center;
 }
 
-#virus img {
-	height: 100%;
-	width: 100%;
-    display: block;
-    object-fit: cover;
+/* Scoreboard section */
+#scoreboard {
+	padding-top: 0;
 }
 
 .card {
@@ -88,10 +91,7 @@ body {
 	justify-content: center;
 }
 
-#start-form .control:first-of-type{
-	flex-grow: 1;
-}
-
+/* Modal box */
 .modal-card-foot {
 	justify-content: center;
 }

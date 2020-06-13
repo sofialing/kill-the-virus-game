@@ -10,22 +10,38 @@
 </head>
 
 <body>
-	<!-- Game over section-->
-	<div id="game-over" class="modal">
-		<div id="modal-background" class="modal-background"></div>
-		<div class="modal-card has-text-centered">
-			<header class="modal-card-head has-background-white">
-				<p class="modal-card-title is-size-6 has-text-weight-bold is-uppercase">Game over</p>
-			</header>
-			<section class="modal-card-body">
-				<p id="game-result" class="is-size-1 has-text-weight-bold"></p>
-			</section>
-			<footer class="modal-card-foot has-background-white">
-				<button class="button is-success">Rematch</button>
-				<button id="new-game" class="button is-success">New game</button>
-			</footer>
+	<!-- Start section-->
+	<section id="start" class="section">
+		<div class="container ">
+			<div class="columns is-centered">
+				<div class="column is-three-fifths has-text-centered ">
+					<h1 class="title is-size-1 has-text-white mb-6">Kill the Virus</h1>
+					<h2 class="subtitle has-text-white mb-6">
+						A simple 2-player real-time game where the goal is to click on a virus as quickly as possible to
+						eradicate it. Points are awarded to the players with the fastest reaction time.
+					</h2>
+
+					<form id="start-form" class="field has-addons">
+						<div class="control">
+							<input class="input" type="text" id="username"
+								placeholder="Enter a nickname to start the game...">
+						</div>
+						<div class="control">
+							<button type="submit" class="button is-info">
+								Play
+							</button>
+						</div>
+					</form>
+
+				</div>
+			</div>
 		</div>
-	</div>
+	</section>
+
+	<!-- Message section-->
+	<section id="message" class="section has-text-centered hide has-text-white">
+		<p id="message-content"></p>
+	</section>
 
 	<!-- Game section-->
 	<section id="game" class="section hide">
@@ -81,41 +97,26 @@
 		</div>
 	</section>
 
-	<!-- Start section-->
-	<section id="start" class="section">
-		<div class="container ">
-			<div class="columns is-centered">
-				<div class="column is-three-fifths has-text-centered ">
-					<h1 class="title is-size-1 has-text-white mb-6">Kill the Virus</h1>
-					<h2 class="subtitle has-text-white mb-6">
-						A simple 2-player real-time game where the goal is to click on a virus as quickly as possible to
-						eradicate it. Points are awarded to the players with the fastest reaction time.
-					</h2>
-
-					<form id="start-form" class="field has-addons">
-						<div class="control">
-							<input class="input" type="text" id="username"
-								placeholder="Enter a nickname to start the game...">
-						</div>
-						<div class="control">
-							<button type="submit" class="button is-info">
-								Play
-							</button>
-						</div>
-					</form>
-
-				</div>
-			</div>
+	<!-- Game over section-->
+	<div id="game-over" class="modal">
+		<div id="modal-background" class="modal-background"></div>
+		<div class="modal-card has-text-centered">
+			<header class="modal-card-head has-background-white">
+				<p class="modal-card-title is-size-6 has-text-weight-bold is-uppercase">Game over</p>
+			</header>
+			<section class="modal-card-body">
+				<p id="game-result" class="is-size-2 has-text-weight-bold"></p>
+			</section>
+			<footer class="modal-card-foot has-background-white">
+				<!-- <button class="button is-success">Rematch</button> -->
+				<button id="new-game" class="button is-success">New game</button>
+			</footer>
 		</div>
-	</section>
-
-	<!-- Message section-->
-	<section id="message" class="section has-text-centered hide has-text-white">
-		<p id="message-content"></p>
-	</section>
+	</div>
 
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
+	<script src="/assets/js/user-interface.js"></script>
 	<script src="/assets/js/game.js"></script>
 </body>
 

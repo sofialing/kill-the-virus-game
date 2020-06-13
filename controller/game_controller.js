@@ -21,17 +21,10 @@ const getVirusState = () => {
 }
 
 /**
- * Get username by socket
- */
-const getUsername = (socket) => {
-	return socket.playerDetails.username;
-}
-
-/**
  * Get player by room
  */
-const getPlayer = (id, rooms, roomName) => {
-	return rooms[roomName].players.find(player => player.id === id);
+const getPlayer = (id, activeGames, gameId) => {
+	return activeGames[gameId].players.find(player => player.id === id);
 }
 
 /**
@@ -39,6 +32,14 @@ const getPlayer = (id, rooms, roomName) => {
  */
 const getOpponent = (id, rooms, roomName) => {
 	return rooms[roomName].players.find(player => player.id !== id);
+}
+
+/**
+ * Get game ID
+ */
+const getGameId = (playerId, activeGames) => {
+	const gameIds = Object.keys(activeGames);
+	return gameIds.find(id => id.includes(playerId));
 }
 
 /**
@@ -58,8 +59,8 @@ const getWinner = (player, opponent) => {
 module.exports = {
 	getRandomNumber,
 	getVirusState,
-	getUsername,
 	getPlayer,
 	getOpponent,
+	getGameId,
 	getWinner,
 }

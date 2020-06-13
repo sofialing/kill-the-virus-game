@@ -66,7 +66,7 @@ virusEl.addEventListener('click', () => {
  * Handle start new game and emit to server
  */
 newGameBtn.addEventListener('click', () => {
-	socket.emit('leave-game');
+	socket.emit('delete-game');
 	socket.emit('register-player', username);
 
 	resetGameSection();
@@ -156,5 +156,10 @@ socket.on('game-over', (winner) => {
 
 // Display message about opponent left game
 socket.on('opponent-left-game', (data) => {
-	console.log(data.message);
+	// stop timer
+	clearInterval(timerInterval);
+
+	// display modal box
+	gameOverEl.classList.add('is-active');
+	setInnerHTML('#game-result', data.message);
 })

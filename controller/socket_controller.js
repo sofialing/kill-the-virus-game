@@ -5,7 +5,7 @@ const debug = require('debug')('kill-the-virus-game:socket_controller');
 const io = require('../app').get('io');
 
 const activeGames = {};
-const maxGameRounds = 2;
+const maxGameRounds = 5;
 const queue = [];
 
 const { getVirusState, getPlayer, getOpponent, getGameId, getWinner } = require('./game_controller');
@@ -43,7 +43,8 @@ const joinGameRoom = (player, opponent) => {
 		players: [
 			{ ...player.playerDetails },
 			{ ...opponent.playerDetails },
-		]
+		],
+		onGoing: true,
 	}
 
 	// init new game
@@ -117,8 +118,26 @@ function registerPlayer(username) {
 function playerDisconnecting() {
 	debug(`Client ${this.id} disconnected.`);
 
-	// check for active room and emit to opponent
-	// remove game room
+	// check if player is waiting in queue,
+	const queueIndex = queue.findIndex(socket => socket.id === this.id);
+	if (queueIndex !== -1) {
+		queue.splice(queueIndex, 1);
+		return;
+	}
+
+	// check if player has an active game
+	const gameId = getGameId(this.id, activeGames);
+	if (!gameId) {
+		return;
+	}
+
+	// if ingoing game, emit message to opponent
+	if (activeGames[gameId].onGoing) {
+		this.to(gameId).emit('opponent-left-game', { message: 'Opponent left the game.' });
+	}
+
+	// delete game room
+	delete activeGames[gameId];
 }
 
 /**
@@ -143,8 +162,12 @@ function virusKilled(reactionTime, gameRound, gameId) {
 
 	// check if game is over and get winner
 	if (gameRound === maxGameRounds) {
+		const gameId = getGameId(this.id, activeGames);
+		activeGames[gameId].onGoing = false;
+
 		const winner = getWinner(player, opponent);
 		io.in(gameId).emit('game-over', winner);
+
 		return;
 	}
 
@@ -153,26 +176,13 @@ function virusKilled(reactionTime, gameRound, gameId) {
 	io.in(gameId).emit('new-round', virusState)
 }
 
-/**
- * Handle player leaving game
- */
-function playerLeavingGame() {
-	const gameId = getGameId(this.id, activeGames);
-
-	// emit message to the other player
-	this.to(gameId).emit('opponent-left-game', { message: 'Opponent left the game.' });
-
-	// delete room
-	delete activeGames[gameId];
-}
-
 module.exports = socket => {
 	debug(`Client ${socket.id} connected.`);
 
 	socket.on('disconnect', playerDisconnecting);
 	socket.on('register-player', registerPlayer);
 	socket.on('virus-killed', virusKilled);
-	socket.on('leave-game', playerLeavingGame);
+	socket.on('delete-game', playerDisconnecting);
 };
 
 

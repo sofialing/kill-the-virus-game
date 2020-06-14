@@ -15,8 +15,9 @@ const getRandomNumber = (max, min) => {
 const getVirusState = () => {
 	return {
 		delay: getRandomNumber(1000, 4000),
+		virusNr: getRandomNumber(1, 9),
 		x: getRandomNumber(0, 20),
-		y: getRandomNumber(0, 20)
+		y: getRandomNumber(0, 20),
 	}
 }
 

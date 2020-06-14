@@ -94,10 +94,10 @@ socket.on('init-game', (data) => {
 })
 
 // Display virus and start timer
-socket.on('show-virus', ({ delay, x, y }) => {
+socket.on('show-virus', ({ delay, virusNr, x, y }) => {
 	setTimeout(() => {
 		// Update virus position
-		updateVirusPosition(x, y);
+		updateVirusPosition(virusNr, x, y);
 
 		// Start timer
 		startTimer();
@@ -120,14 +120,14 @@ socket.on('update-score', ({ winnerId, updatedScore }) => {
 })
 
 // Start new game round
-socket.on('new-round', ({ delay, x, y }) => {
+socket.on('new-round', ({ delay, virusNr, x, y }) => {
 	// update number of rounds
 	gameRound++;
 	setInnerHTML('#game-round', gameRound);
 
 	setTimeout(() => {
 		// Update virus position
-		updateVirusPosition(y, x)
+		updateVirusPosition(virusNr, x, y)
 
 		// Start timer
 		startTimer();

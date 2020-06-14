@@ -16,9 +16,10 @@ const updateTimer = (element, time) => {
 }
 
 // Update virus
-const updateVirusPosition = (x, y) => {
+const updateVirusPosition = (virusNr, x, y) => {
 	virusEl.style.gridColumn = `${x} / span 1`;
 	virusEl.style.gridRow = `${y} / span 1`;
+	virusEl.src = `/assets/images/virus-${virusNr}.svg`
 	displayElement(virusEl);
 }
 

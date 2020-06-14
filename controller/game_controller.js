@@ -52,7 +52,6 @@ const getWinner = (player, opponent) => {
 
 
 module.exports = {
-	getRandomNumber,
 	getVirusState,
 	getPlayer,
 	getOpponent,

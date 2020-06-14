@@ -5,7 +5,7 @@ const debug = require('debug')('kill-the-virus-game:socket_controller');
 const io = require('../app').get('io');
 
 const activeGames = {};
-const maxGameRounds = 5;
+const maxGameRounds = 10;
 const queue = [];
 
 const { getVirusState, getPlayer, getOpponent, getGameId, getWinner } = require('./game_controller');

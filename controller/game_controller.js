@@ -1,23 +1,17 @@
 /**
  * Helper functions
  */
-
-/**
- * Generate a random number between min and max
- */
-const getRandomNumber = (max, min) => {
-	return Math.floor(Math.random() * (max - min) + min);
-}
+const _ = require('lodash');
 
 /**
  * Get random delay and position for virus
  */
 const getVirusState = () => {
 	return {
-		delay: getRandomNumber(1000, 4000),
-		virusNr: getRandomNumber(1, 9),
-		x: getRandomNumber(0, 20),
-		y: getRandomNumber(0, 20),
+		delay: _.random(1000, 4000),
+		virusNr: _.random(1, 9),
+		x: _.random(0, 20),
+		y: _.random(0, 20),
 	}
 }
 

@@ -6,6 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Kill The Virus</title>
 	<link rel="shortcut icon" href="/assets/images/favicon.ico" />
+	<script src="https://kit.fontawesome.com/10db74b204.js" crossorigin="anonymous"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma.min.css">
 	<link rel="stylesheet" href="/assets/css/style.css">
 </head>
@@ -15,24 +16,36 @@
 	<section id="start" class="section">
 		<div class="container ">
 			<div class="columns is-centered">
-				<div class="column is-three-fifths has-text-centered ">
-					<h1 class="title is-size-1 has-text-white mb-6">Kill the Virus</h1>
+				<div class="column is-half has-text-centered ">
+					<h1 class="title has-text-white mb-6">Kill the Virus</h1>
 					<h2 class="subtitle has-text-white mb-6">
-						A simple 2-player real-time game where the goal is to click on a virus as quickly as possible to
-						eradicate it. Points are awarded to the players with the fastest reaction time.
+						Test your reactime time and click on the virus as quickly as possible to kill it. The player
+						with the best reaction times wins.
 					</h2>
 
-					<form id="start-form" class="field has-addons">
-						<div class="control">
-							<input class="input" type="text" id="username"
-								placeholder="Enter a nickname to start the game...">
+					<form id="start-form" class="field is-grouped">
+						<div class="control is-expanded">
+							<input id="username" class="input" type="text"
+								placeholder="Enter a name to start the game..." autofocus>
 						</div>
 						<div class="control">
-							<button type="submit" class="button is-info">
-								Play
+							<button type="submit" class="button is-white is-outlined">
+								Start game
 							</button>
 						</div>
 					</form>
+
+					<!-- <form id="start-form" class="field has-addons">
+						<div class="control">
+							<input class="input" type="text" id="username"
+								placeholder="Enter a name to start the game..." autofocus>
+						</div>
+						<div class="control">
+							<button type="submit" class="button button is-outlined">
+								Play
+							</button>
+						</div>
+					</form> -->
 
 				</div>
 			</div>
@@ -40,7 +53,8 @@
 	</section>
 
 	<!-- Message section-->
-	<section id="message" class="section has-text-centered hide has-text-white">
+	<section id="message" class="section has-text-centered has-text-white hide">
+		<i class="fas fa-spinner fa-pulse fa-2x mb-5"></i>
 		<p id="message-content"></p>
 	</section>
 

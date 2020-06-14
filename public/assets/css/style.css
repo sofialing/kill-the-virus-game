@@ -1,8 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
 
 * {
 	box-sizing: border-box;
+	-webkit-user-select: none; /* Safari */
+	-ms-user-select: none; /* IE 10+ and Edge */
+	user-select: none; /* Standard syntax */
 }
 
 body {
@@ -21,8 +24,10 @@ body {
 }
 
 /* Start section */
-#start {
+#start,
+#message {
 	height: 100%;
+	margin-bottom: 15vh;
 }
 
 #start .container {
@@ -33,7 +38,8 @@ body {
 }
 
 #start h1 {
-	font-family: 'Press Start 2P', cursive;
+	font-family: 'Bungee', cursive;
+	font-size: 5rem;
 }
 
 #start-form .control:first-of-type{
@@ -63,8 +69,9 @@ body {
 }
 
 #virus {
-	max-height: 50px;
-	max-width: 50px;
+	min-width: 50px;
+	max-width: 75px;
+	max-height: 75px;
 }
 
 /* Scoreboard section */

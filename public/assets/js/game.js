@@ -82,7 +82,7 @@ socket.on('display-virus', ({ delay, nr, x, y }, gameRound = 1) => {
 
 	setTimeout(() => {
 		// update virus position
-		updateVirusPosition(nr, x, y);
+		updateRandomVirus(nr, x, y);
 
 		// start timer
 		startTimer();

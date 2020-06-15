@@ -8,7 +8,7 @@ const activeGames = {};
 const maxGameRounds = 10;
 const queue = [];
 
-const { getVirusState, getPlayer, getOpponent, getGameId, getWinner } = require('./game_controller');
+const { getVirusState, getPlayer, getOpponent, getGameId, getWinner } = require('./helpers');
 
 /**
  * Pair player with another player

@@ -2,13 +2,19 @@ const messageSection = document.querySelector('#message');
 const gameSection = document.querySelector('#game');
 
 // Set innerHTML of element
-const setInnerHTML = (element, content) => document.querySelector(element).innerHTML = content;
+const setInnerHTML = (element, content) => {
+	document.querySelector(element).innerHTML = content
+};
 
 // Hide element
-const hideElement = element => element.classList.add('hide');
+const hideElement = (element) => {
+	element.classList.add('hide')
+};
 
 // Display element
-const displayElement = element => element.classList.remove('hide');
+const displayElement = (element) => {
+	element.classList.remove('hide');
+};
 
 // Update timer
 const updateTimer = (element, time) => {
@@ -20,6 +26,7 @@ const updateVirusPosition = (virusNr, x, y) => {
 	virusEl.style.gridColumn = `${x} / span 1`;
 	virusEl.style.gridRow = `${y} / span 1`;
 	virusEl.src = `/assets/images/virus-${virusNr}.svg`
+
 	displayElement(virusEl);
 }
 

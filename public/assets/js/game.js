@@ -9,15 +9,13 @@ const virusEl = document.querySelector('#virus');
 const newGameBtn = document.querySelector('#new-game');
 
 // Player details
-let username = null;
 let playerId = null;
+let username = null;
 
 // Game details
-let gameId = null;
-let gameRound;
-let timerInterval;
-let startTime;
 let reactionTime;
+let startTime;
+let timerInterval;
 
 /**
  * Start timer
@@ -59,81 +57,38 @@ virusEl.addEventListener('click', () => {
 	updateTimer('#player-timer', reactionTime);
 
 	// emit reaction time to server
-	socket.emit('virus-killed', reactionTime, gameRound, gameId);
+	socket.emit('virus-killed', reactionTime);
 })
 
 /**
  * Handle start new game and emit to server
  */
 newGameBtn.addEventListener('click', () => {
-	socket.emit('delete-game');
+	socket.emit('player-left');
 	socket.emit('register-player', username);
 
 	resetGameSection();
-})
+});
 
 
 /**
  * Listen for events from the server
  */
 
-// Display message while waiting for another player to join
-socket.on('waiting', ({ message }) => {
-	setInnerHTML('#message-content', message);
-	displayElement(messageEl);
-});
-
-// Init new game and display the game section
-socket.on('init-game', (data) => {
-	playerId = data.id;
-	gameId = data.gameId;
-	gameRound = 1;
-
-	// set and display game section
-	setGameSection(username, data.opponent);
-})
-
 // Display virus and start timer
-socket.on('show-virus', ({ delay, virusNr, x, y }) => {
-	setTimeout(() => {
-		// Update virus position
-		updateVirusPosition(virusNr, x, y);
-
-		// Start timer
-		startTimer();
-
-	}, delay)
-});
-
-// Update and display opponents reaction time
-socket.on('show-reaction-time', opponentReactionTime => {
-	updateTimer('#opponent-timer', opponentReactionTime);
-})
-
-// Update and display score
-socket.on('update-score', ({ winnerId, updatedScore }) => {
-	if (winnerId === playerId) {
-		setInnerHTML('#player-score', updatedScore);
-	} else {
-		setInnerHTML('#opponent-score', updatedScore);
-	}
-})
-
-// Start new game round
-socket.on('new-round', ({ delay, virusNr, x, y }) => {
-	// update number of rounds
-	gameRound++;
+socket.on('display-virus', ({ delay, nr, x, y }, gameRound = 1) => {
+	// set current game round
 	setInnerHTML('#game-round', gameRound);
 
 	setTimeout(() => {
-		// Update virus position
-		updateVirusPosition(virusNr, x, y)
+		// update virus position
+		updateVirusPosition(nr, x, y);
 
-		// Start timer
+		// start timer
 		startTimer();
 
 	}, delay)
-})
+});
 
 // Display game over message
 socket.on('game-over', (winner) => {
@@ -152,14 +107,42 @@ socket.on('game-over', (winner) => {
 
 	gameOverEl.classList.add('is-active');
 	setInnerHTML('#game-result', message);
-})
+});
+
+// Start new game and display the game section
+socket.on('start-new-game', (data) => {
+	playerId = data.id;
+
+	setGameSection(username, data.opponent);
+});
 
 // Display message about opponent left game
 socket.on('opponent-left-game', (data) => {
 	// stop timer
 	clearInterval(timerInterval);
 
-	// display modal box
-	gameOverEl.classList.add('is-active');
+	// hide virus and display modal box
+	hideElement(virusEl);
 	setInnerHTML('#game-result', data.message);
-})
+	gameOverEl.classList.add('is-active');
+});
+
+// Update and display opponents reaction time
+socket.on('update-reaction-time', opponentReactionTime => {
+	updateTimer('#opponent-timer', opponentReactionTime);
+});
+
+// Display updated score
+socket.on('update-score', ({ winnerId, score }) => {
+	if (winnerId === playerId) {
+		setInnerHTML('#player-score', score);
+	} else {
+		setInnerHTML('#opponent-score', score);
+	}
+});
+
+// Display message while waiting for another player to join
+socket.on('waiting', ({ message }) => {
+	setInnerHTML('#message-content', message);
+	displayElement(messageEl);
+});

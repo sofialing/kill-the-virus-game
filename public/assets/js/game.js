@@ -1,12 +1,12 @@
 const socket = io();
 
 // HTML elements
+const gameOverEl = document.querySelector('#game-over');
+const messageEl = document.querySelector('#message');
+const newGameBtn = document.querySelector('#new-game');
 const startEl = document.querySelector('#start');
 const startForm = document.querySelector('#start-form');
-const messageEl = document.querySelector('#message');
-const gameOverEl = document.querySelector('#game-over');
 const virusEl = document.querySelector('#virus');
-const newGameBtn = document.querySelector('#new-game');
 
 // Player details
 let playerId = null;

@@ -8,7 +8,7 @@ const activeGames = {};
 const playQueue = [];
 const maxGameRounds = 2;
 
-const { getGameId, getOpponent, getPlayer, getUpdatedScore, getVirusState, getWinner } = require('./helpers');
+const { getGameId, getOpponent, getPlayer, getRandomVirus, getUpdatedScore, getWinner } = require('./helpers');
 
 /**
  * Pair player with another player
@@ -65,8 +65,8 @@ const startNewGame = (player1, player2, gameId) => {
 		opponent: player1.playerData.username,
 	});
 
-	// emit delay and position of virus to both players
-	io.in(gameId).emit('display-virus', getVirusState());
+	// emit delay and random virus
+	io.in(gameId).emit('display-virus', getRandomVirus());
 }
 
 /**
@@ -79,8 +79,8 @@ const startNewGameRound = (gameId) => {
 	// update the number of rounds played
 	activeGames[gameId].gameRound++;
 
-	// emit delay and position of virus and number of rounds played
-	io.in(gameId).emit('display-virus', getVirusState(), activeGames[gameId].gameRound);
+	// emit delay, random virus and number of rounds played
+	io.in(gameId).emit('display-virus', getRandomVirus(), activeGames[gameId].gameRound);
 }
 
 /**
@@ -146,7 +146,7 @@ function handleVirusKilled(reactionTime) {
 	// emit updated score to players
 	io.in(gameId).emit('update-score', getUpdatedScore(player, opponent));
 
-	// check if game is over and get the winner
+	// check if game is over and emit the winner
 	if (activeGames[gameId].gameRound === maxGameRounds) {
 		io.in(gameId).emit('game-over', getWinner(player, opponent));
 		return;

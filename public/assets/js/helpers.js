@@ -1,5 +1,11 @@
-const messageSection = document.querySelector('#message');
-const gameSection = document.querySelector('#game');
+// HTML elements
+const gameEl = document.querySelector('#game');
+const gameOverEl = document.querySelector('#game-over');
+const messageEl = document.querySelector('#message');
+const newGameBtn = document.querySelector('#new-game');
+const startEl = document.querySelector('#start');
+const startForm = document.querySelector('#start-form');
+const virusEl = document.querySelector('#virus');
 
 // Display element
 const displayElement = (element) => {
@@ -13,7 +19,8 @@ const hideElement = (element) => {
 
 // Reset interface before starting new game
 const resetGameSection = () => {
-	hideElement(gameSection);
+	hideElement(gameEl);
+	hideElement(virusEl);
 	gameOverEl.classList.remove('is-active');
 
 	setInnerHTML('#timer', '00:00.000');
@@ -29,8 +36,8 @@ const setGameSection = (username, opponent) => {
 	setInnerHTML('#player-username', username);
 	setInnerHTML('#opponent-username', opponent);
 
-	hideElement(messageSection);
-	displayElement(gameSection);
+	hideElement(messageEl);
+	displayElement(gameEl);
 }
 
 // Set innerHTML of element

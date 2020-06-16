@@ -6,7 +6,7 @@ const io = require('../app').get('io');
 
 const activeGames = {};
 const playQueue = [];
-const maxGameRounds = 2;
+const maxGameRounds = 10;
 
 const { getGameId, getOpponent, getPlayer, getRandomVirus, getUpdatedScore, getWinner } = require('./helpers');
 
@@ -25,7 +25,7 @@ const matchPlayers = (player) => {
 	playQueue.push(player);
 
 	// broadcast message while waiting for an opponent to join
-	player.emit('waiting', { message: 'Waiting for another player to join...' });
+	player.emit('waiting-for-opponent', { message: 'Waiting for another player to join...' });
 };
 
 /**
@@ -117,10 +117,8 @@ function handlePlayerDisconnecting() {
 	const gameId = getGameId(this.id, activeGames);
 	if (!gameId) return;
 
-	// in case of ongoing game, notify the opponent
-	if (activeGames[gameId].gameRound !== maxGameRounds) {
-		this.to(gameId).emit('opponent-left-game', { message: 'Opponent left the game.' });
-	}
+	// notify the opponent
+	this.to(gameId).emit('opponent-left-game', { message: 'Opponent left the game.' });
 
 	// delete the game from list of active games
 	delete activeGames[gameId];
@@ -137,18 +135,22 @@ function handleVirusKilled(reactionTime) {
 	player.reactionTime = reactionTime;
 
 	// emit reaction time to opponent
-	this.to(gameId).emit('update-reaction-time', reactionTime);
+	this.to(gameId).emit('update-opponent-timer', reactionTime);
 
 	// get opponents reaction time, return if null
 	const opponent = getOpponent(this.id, gameId, activeGames);
 	if (!opponent.reactionTime) return;
 
 	// emit updated score to players
-	io.in(gameId).emit('update-score', getUpdatedScore(player, opponent));
+	io.in(gameId).emit('update-scoreboard', getUpdatedScore(player, opponent));
 
 	// check if game is over and emit the winner
 	if (activeGames[gameId].gameRound === maxGameRounds) {
 		io.in(gameId).emit('game-over', getWinner(player, opponent));
+
+		// delete the game from list of active games
+		delete activeGames[gameId];
+
 		return;
 	}
 

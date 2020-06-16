@@ -133,6 +133,9 @@ body {
 	#game {
 		flex-grow: 1;
 		display: flex;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
 	}
 
 	#game .container {

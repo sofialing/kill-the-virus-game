@@ -146,3 +146,29 @@ socket.on('waiting', ({ message }) => {
 	setInnerHTML('#message-content', message);
 	displayElement(messageEl);
 });
+
+// Handle player reconnecting
+const handlePlayerReconnected = () => {
+	if (!username) return;
+
+	// stop timer
+	clearInterval(timerInterval);
+
+	// clear and hide game section
+	hideElement(gameSection);
+	hideElement(virusEl);
+	resetGameSection();
+
+	// notify player
+	setInnerHTML('#message-content', 'Lost connection to server, reconnecting...');
+	displayElement(messageEl);
+
+	// register player again
+	setTimeout(() => {
+		socket.emit('register-player', username);
+	}, 2000)
+}
+
+socket.on('reconnect', () => {
+	handlePlayerReconnected();
+});

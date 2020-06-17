@@ -146,7 +146,7 @@ startForm.addEventListener('submit', e => {
  * Handle when player clicks on virus and emit reaction time
  */
 virusEl.addEventListener('click', () => {
-	// stop Timer
+	// stop timer
 	clearInterval(timerInterval);
 
 	// hide virus and display player reaction time

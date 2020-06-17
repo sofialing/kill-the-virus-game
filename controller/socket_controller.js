@@ -14,9 +14,8 @@ const { getGameId, getOpponent, getPlayer, getRandomVirus, getUpdatedScore, getW
  * Pair player with another player
  */
 const matchPlayers = (player) => {
-	// check for waiting players
+	// check for waiting player and join new game room
 	if (playQueue.length) {
-		// get opponent and join new game room
 		joinGameRoom(player, playQueue.pop());
 		return;
 	}
@@ -113,7 +112,7 @@ function handlePlayerDisconnecting() {
 		return;
 	}
 
-	// check if player has an active game
+	// check if player has an active game, return if null
 	const gameId = getGameId(this.id, activeGames);
 	if (!gameId) return;
 
@@ -162,7 +161,6 @@ module.exports = socket => {
 	debug(`Client ${socket.id} connected.`);
 
 	socket.on('disconnect', handlePlayerDisconnecting);
-	socket.on('player-left', handlePlayerDisconnecting);
 	socket.on('register-player', handleRegisterPlayer);
 	socket.on('virus-killed', handleVirusKilled);
 };

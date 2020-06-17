@@ -51,7 +51,7 @@ const getRandomVirus = () => {
 }
 
 /**
- * Get winner
+ * Get the winning player, returns null if it's a tie
  */
 const getWinner = (player, opponent) => {
 	if (player.score < opponent.score) {

@@ -8,6 +8,7 @@ let username = null;
 let reactionTime;
 let startTime;
 let timerInterval;
+let virusTimeout;
 
 /**
  * Display message while waiting for another player to join
@@ -24,7 +25,7 @@ const displayVirus = ({ delay, nr, x, y }, gameRound = 1) => {
 	// set current game round
 	setInnerHTML('#game-round', gameRound);
 
-	setTimeout(() => {
+	virusTimeout = setTimeout(() => {
 		// update virus position
 		updateRandomVirus(nr, x, y);
 
@@ -38,13 +39,10 @@ const displayVirus = ({ delay, nr, x, y }, gameRound = 1) => {
  * Handle game over and display message
  */
 const handleGameOver = (winner) => {
-	// stop Timer
-	clearInterval(timerInterval);
-
 	let message;
 
 	if (!winner) {
-		message = "It's a draw!";
+		message = "It's a tie!";
 	} else if (winner.id === playerId) {
 		message = 'Congratulations, you won!';
 	} else {
@@ -60,9 +58,9 @@ const handleGameOver = (winner) => {
  * Notify player that the opponent has left the game
  */
 const handleOpponentLeft = (data) => {
-	// stop timer and remove virus
+	// stop timer and clear virus timeout
+	clearTimeout(virusTimeout);
 	clearInterval(timerInterval);
-	hideElement(virusEl);
 
 	// display modal box with message
 	setInnerHTML('#game-result', data.message);
@@ -160,16 +158,14 @@ virusEl.addEventListener('click', () => {
 })
 
 /**
- * Handle start new game and emit to server
+ * Handle start new game and emit to server to re-register player
  */
 newGameBtn.addEventListener('click', () => {
-	socket.emit('player-left');
 	socket.emit('register-player', username);
 
 	// reset game section
 	resetGameSection();
 });
-
 
 /**
  * Listen for events from the server

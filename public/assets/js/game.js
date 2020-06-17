@@ -150,6 +150,7 @@ virusEl.addEventListener('click', () => {
 	clearInterval(timerInterval);
 
 	// hide virus and display player reaction time
+	virusEl.src = '';
 	hideElement(virusEl);
 	updateTimer('#player-timer', reactionTime);
 
